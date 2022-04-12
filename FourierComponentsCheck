@@ -1,0 +1,7 @@
+import numpy as np
+
+a = 2.46 # angstrom
+lat_vec1 = a*np.array([1,0])
+lat_vec2 = a*np.array(1/2,np.sqrt(3)/2)
+
+print(np.dot(lat_vec1, lat_vec2))
