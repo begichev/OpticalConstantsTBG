@@ -6,7 +6,7 @@
 import numpy as np
 
 a = 2.46  # angstrom
-theta = 3.00 * np.pi / 180  # degree to rad
+theta = 10.00 * np.pi / 180  # degree to rad
 
 # primitive vectors of SLG by Moon Koshino (2013)
 lat_vec1 = a * np.array([1, 0])
@@ -19,17 +19,10 @@ def NeededSites(theta, M):
     return 0.5 * (np.sqrt(M) / (2 * np.sin(theta / 2)) - 1)
 
 
-M = 15
-N = int(1.5 * NeededSites(theta, M))  # N lat_vec to each side from the origin
+M = 4
+N = int(NeededSites(theta, M))  # N lat_vec to each side from the origin
+Next = int(1.5*NeededSites(theta, M))
 # 1.5 is the correction to avoid atoms without interlayer neighbours in (-N,N) ranges
-
-L = []
-
-for i in np.arange(-N, N + 1):
-    for j in np.arange(-N, N + 1):
-        L.append([i, j])
-L = np.array(L)
-
 
 def Rotation(theta):
     c, s = np.cos(theta), np.sin(theta)
@@ -76,8 +69,8 @@ def ClosestAtomFromTop(bottom_atom, sublattice_bottom, sublattice_top):
     vec_bottom_atom = bottom_atom[0] * lat_vec_bottom1 + bottom_atom[1] * lat_vec_bottom2 + 0.5 * (
                 2 * sublattice_bottom - 1) * tau
     dists = []
-    for n in np.arange(-N, N + 1):
-        for k in np.arange(-N, N + 1):
+    for n in np.arange(-Next, Next + 1):
+        for k in np.arange(-Next, Next + 1):
             vec_top_atom = n * lat_vec_top1 + k * lat_vec_top2 + 0.5 * (2 * sublattice_top - 1) * tau
             dists.append([DistBottomTop(vec_bottom_atom, sublattice_bottom, vec_top_atom, sublattice_top), [n, k]])
     distances = ExtractFirsts(dists)
@@ -125,7 +118,7 @@ def HamiltForK(bottom_atom, sublattice_bottom, sublattice_top):
 
     top_atom = ClosestAtomFromTop(bottom_atom, sublattice_bottom, sublattice_top)
     delta = top_atom[1]
-    ham = Hopping(delta, 0, 0)
+    ham = 0
     for i in np.arange(-1, 2):
         for j in np.arange(-1, 2):
             vec = delta + i * lat_vec_bottom1 + j * lat_vec_bottom2
@@ -176,9 +169,6 @@ def FourierHoppingPlus(moire_vec, sublattice_bottom, sublattice_top):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print('for minus')
-    print(FourierHoppingMinus([-1, -2], 0, 0), '\n', FourierHoppingMinus([-1, -1], 0, 0),'\n',FourierHoppingMinus([-1, 0], 0, 0),'\n',FourierHoppingMinus([0, 0], 0, 0),'\n',FourierHoppingMinus([1, 0], 0, 0),'\n',FourierHoppingMinus([1, 1], 0, 0))
-    print('for plus')
-    print(FourierHoppingPlus([-1, -2], 0, 0), '\n', FourierHoppingPlus([-1, -1], 0, 0), '\n',
-          FourierHoppingPlus([-1, 0], 0, 0), '\n', FourierHoppingPlus([0, 0],0,0),'\n', FourierHoppingPlus([1, 0],0,0),'\n', FourierHoppingPlus([1, 1],0,0))
+    print(FourierHoppingPlus([-1, -1], 0, 0))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
