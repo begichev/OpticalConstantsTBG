@@ -73,10 +73,10 @@ def Re_optical_conductivity(vals, vecs, omegas, gamma=0.002*t, e_win=0.05*t, kst
 
     def calc_sigma_one_point(omega):
         sigmas_mn = 0
-        kstepix = -1*kstep0
-        kstepiy = 0
-        kstepjx = 0.5*kstep0
-        kstepjy = -0.5*np.sqrt(3)*kstep0
+        kstepix = -0.5*np.sqrt(3)*kstep0*np.pi
+        kstepiy = 0.5*kstep0*2*np.pi
+        kstepjx = 0
+        kstepjy = -kstep0*2*np.pi
         for i in np.arange(steps**2):
                 energies = np.array(vals[i])
                 occup = np.array([2,2,0,0])
@@ -88,7 +88,7 @@ def Re_optical_conductivity(vals, vecs, omegas, gamma=0.002*t, e_win=0.05*t, kst
                 pairs = pick_up_transition_pairs(energies, omega, e_win, occup)   
                 if len(pairs):
                     sigmas_mn += np.sum([calc_sigma_mn_pair(i, int(pair[0]), int(pair[1]), omega, occup, v) for pair in pairs])
-        return 6*np.sqrt(3)*kstep0**2/np.pi*np.sum(sigmas_mn)
+        return 4*np.sqrt(3)*kstep0**2*np.sum(sigmas_mn)
     
     sigmas = [calc_sigma_one_point(omega) for omega in omegas]
     return np.array(sigmas)
@@ -106,9 +106,9 @@ def dimensionless_v(kx, ky):
     block2 = np.conj(block)
     return block_diag(block, block2)
 
-def calc_optical_conductivity(omegas=np.arange(0.05, 1.5, 0.05), gamma=0.002*t, e_win=0.02*t, save_to='ab_sigma.txt'):
-    kstep0 = 0.001
-    gamma = 0.02
+def calc_optical_conductivity(omegas=np.arange(0.05, 1.5, 0.05), gamma=0.002*t, e_win=0.02*t, save_to='ab_sigma.txt',kstep0=0.001):
+ #   kstep0 = 0.0005
+    gamma = 0.04
     steps = int(2/3/kstep0)
     energies_load_from='ab_bilayer_energies_'+str(kstep0)+'.txt'
     wavefunctions_load_from='ab_bilayer_wavefunctions_'+str(kstep0)+'.txt'
